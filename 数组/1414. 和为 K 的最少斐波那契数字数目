@@ -1,0 +1,83 @@
+## 题目描述
+给你数字 k ，请你返回和为 k 的斐波那契数字的最少数目，其中，每个斐波那契数字都可以被使用多次。
+
+斐波那契数字定义为：
+
+    F1 = 1
+    F2 = 1
+    Fn = Fn-1 + Fn-2 ， 其中 n > 2 。
+
+数据保证对于给定的 k ，一定能找到可行解。
+
+ 
+
+示例 1：
+
+输入：k = 7
+输出：2 
+解释：斐波那契数字为：1，1，2，3，5，8，13，……
+对于 k = 7 ，我们可以得到 2 + 5 = 7 。
+
+示例 2：
+
+输入：k = 10
+输出：2 
+解释：对于 k = 10 ，我们可以得到 2 + 8 = 10 。
+
+示例 3：
+
+输入：k = 19
+输出：3 
+解释：对于 k = 19 ，我们可以得到 1 + 5 + 13 = 19 。
+
+ 
+
+提示：
+
+    1 <= k <= 10^9
+
+## ACcode
+```
+class Solution:
+    def findMinFibonacciNumbers(self, k: int) -> int:
+        li = [1]
+        a,b=1,1
+        while b<k:
+            c = a+b
+            a=b
+            b=c
+            li.append(c)
+        if li[-1] >k:
+            li.pop(-1)
+        ans = 1
+        while True:
+            loc = self.findMid(li,k)
+            k = k - li[loc]
+            if k == 0:
+                return ans
+            ans += 1
+            
+     ## 查找第一个小于等于k的数   
+    def findMid(self,li,k):
+        left = 0
+        right = len(li) - 1
+        res = left
+        while left <=right:
+            mid = (left+right) // 2
+            if li[mid] > k:
+                right = mid-1
+            elif li[mid] < k:
+                left = mid + 1
+                res = mid
+            else:
+                return mid
+        return res
+        
+```
+## 解题思路
+这道题一开始想先计算出所有小于k的斐波那契数列，然后再用计算出的值与k相减，每次相减的结果存到一个列表中，但是发现这样随着迭代次数的增加，会导致记录的值越
+来越多，所以会超时。
+
+最后的思路是：
+因为给定的斐波那契数列里面有1，也就是说，无论给什么值，我都能通过有限个1来把它表示出来。既然这样，那我就用贪心的思想，每次找到第一个小于或者等于k的数，然
+后把它从k里减掉，更新k的值为减掉的结果，最坏的情况下，我能找到很多个1把它给化为0.
